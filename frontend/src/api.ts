@@ -24,7 +24,7 @@ export type Ticker = {
   teams: TeamRow[]
 }
 
-export type Horizon = 4 | 6 | 8
+export type Horizon = 4 | 5 | 6 | 7 | 8
 
 export async function fetchTicker(horizon: Horizon): Promise<Ticker> {
   const response = await fetch(`/api/fixtures/ticker?horizon=${horizon}`)
@@ -33,4 +33,28 @@ export async function fetchTicker(horizon: Horizon): Promise<Ticker> {
     throw new Error(body || `HTTP ${response.status}`)
   }
   return response.json() as Promise<Ticker>
+}
+
+export type PlayerRow = {
+  id: number
+  web_name: string
+  team_short: string
+  position: string
+  price: number | null
+  fixtures: Cell[]
+}
+
+export type PlayersPage = {
+  start_event: number
+  gameweeks: number[]
+  players: PlayerRow[]
+}
+
+export async function fetchPlayers(): Promise<PlayersPage> {
+  const response = await fetch('/api/players')
+  if (!response.ok) {
+    const body = await response.text()
+    throw new Error(body || `HTTP ${response.status}`)
+  }
+  return response.json() as Promise<PlayersPage>
 }

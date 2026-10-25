@@ -1,0 +1,6 @@
+player_code,player_id,first_name,second_name,web_name,team_code,position
+100,1,Bukayo,Saka,Saka,3,Midfielder
+200,2,Mohamed,Salah,M.Salah,14,Midfielder
+300,3,Robert,Sánchez,Sánchez,8,Goalkeeper
+400,4,Lost,Player,Lost,999,Forward
+500,5,New,Signing,Newbie,3,Defender

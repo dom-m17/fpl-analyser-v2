@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-ALLOWED_HORIZONS = (4, 6, 8)
+ALLOWED_HORIZONS = (4, 5, 6, 7, 8)
 
 
 @dataclass(frozen=True)
@@ -50,21 +50,33 @@ def event_window(events: list[dict], start_id: int, horizon: int) -> list[int]:
     return ids[:horizon]
 
 
-def build_ticker(bootstrap: dict, fixtures: list[dict], horizon: int) -> Ticker:
+def upcoming_gameweeks(bootstrap: dict, horizon: int) -> tuple[int, list[int]]:
     events = bootstrap["events"]
-    teams = bootstrap["teams"]
     start = start_event_id(events)
-    gameweeks = event_window(events, start, horizon)
+    return start, event_window(events, start, horizon)
+
+
+def team_cells(
+    fixtures: list[dict],
+    gameweeks: list[int],
+    team_id: int,
+    short_by_id: dict[int, str],
+) -> list[Cell]:
+    return [
+        Cell(event=gw, fixtures=_cell_fixtures(fixtures, gw, team_id, short_by_id))
+        for gw in gameweeks
+    ]
+
+
+def build_ticker(bootstrap: dict, fixtures: list[dict], horizon: int) -> Ticker:
+    teams = bootstrap["teams"]
+    start, gameweeks = upcoming_gameweeks(bootstrap, horizon)
     short_by_id = {team["id"]: team["short_name"] for team in teams}
 
     rows: list[TeamRow] = []
     for team in teams:
-        fdrs: list[int] = []
-        cells: list[Cell] = []
-        for gw in gameweeks:
-            cell_fixtures = _cell_fixtures(fixtures, gw, team["id"], short_by_id)
-            fdrs.extend(item.fdr for item in cell_fixtures)
-            cells.append(Cell(event=gw, fixtures=cell_fixtures))
+        cells = team_cells(fixtures, gameweeks, team["id"], short_by_id)
+        fdrs = [item.fdr for cell in cells for item in cell.fixtures]
         average = sum(fdrs) / len(fdrs) if fdrs else None
         rows.append(
             TeamRow(

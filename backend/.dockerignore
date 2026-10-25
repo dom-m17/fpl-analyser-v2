@@ -1,0 +1,14 @@
+# Local virtualenv — huge, and macOS-built binaries are useless in a Linux image
+.venv
+
+# Build/test artefacts that would otherwise shadow a clean install
+*.egg-info
+__pycache__
+*.py[cod]
+.pytest_cache
+
+# Not needed to run the service
+tests
+Makefile
+Dockerfile
+.dockerignore

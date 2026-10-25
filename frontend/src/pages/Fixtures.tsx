@@ -4,10 +4,10 @@ import { fetchTicker, type Cell, type Horizon, type TeamRow, type Ticker } from 
 type SortKey = 'team' | 'average' | `gw:${number}`
 type SortDir = 'asc' | 'desc'
 
-const HORIZONS: Horizon[] = [4, 6, 8]
+const HORIZONS: Horizon[] = [4, 5, 6, 7, 8]
 
 export function Fixtures() {
-  const [horizon, setHorizon] = useState<Horizon>(6)
+  const [horizon, setHorizon] = useState<Horizon>(5)
   const [ticker, setTicker] = useState<Ticker | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [sortKey, setSortKey] = useState<SortKey>('average')

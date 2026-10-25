@@ -3,8 +3,10 @@ import os
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from fpl.cache import get_payloads
+from fpl.cache import get_core_tables, get_payloads
 from fpl.client import FPLError
+from fpl.core_client import CoreError
+from fpl.players import PlayersPage, build_players
 from fpl.ticker import ALLOWED_HORIZONS, Ticker, build_ticker
 
 app = FastAPI(title="FPL Analyser")
@@ -26,3 +28,13 @@ def fixture_ticker(horizon: int = Query(default=6)) -> Ticker:
     except FPLError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     return build_ticker(bootstrap, fixtures, horizon)
+
+
+@app.get("/api/players")
+def players() -> PlayersPage:
+    try:
+        bootstrap, fixtures = get_payloads()
+        core_players, playerstats = get_core_tables()
+    except (FPLError, CoreError) as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return build_players(bootstrap, fixtures, core_players, playerstats)
